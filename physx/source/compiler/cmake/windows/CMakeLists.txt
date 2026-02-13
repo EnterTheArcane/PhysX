@@ -43,7 +43,13 @@ ENDIF()
 # Common Flags
 # PT: changed /Ox to /O2 because "the /Ox compiler option enables only a subset of the speed optimization options enabled by /O2."
 # See https://docs.microsoft.com/en-us/cpp/build/reference/ox-full-optimization?view=vs-2019
-SET(PHYSX_COMMON_FLAGS "/std:c++14 /d2Zi+ /MP /WX /W4 /GF /GS- /Gd ${PHYSX_FP_MODE} /Oy ${PHYSX_WARNING_DISABLES}")
+SET(PHYSX_COMMON_FLAGS "/std:c++14 /d2Zi+ /WX /W4 /GF /GS- /Gd ${PHYSX_FP_MODE} /Oy ${PHYSX_WARNING_DISABLES}")
+
+# Suppress warnings that clang-cl emits but MSVC does not
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	STRING(APPEND PHYSX_COMMON_FLAGS " -Wno-unknown-pragmas -Wno-return-type-c-linkage -Wno-sign-compare -Wno-reorder-ctor -Wno-missing-field-initializers -Wno-unused-command-line-argument -Wno-deprecated-copy -Wno-invalid-offsetof -Wno-bitwise-instead-of-logical -Wno-inconsistent-missing-override -Wno-nan-infinity-disabled -Wno-unused-function -Wno-unused-private-field -Wno-unused-variable -Wno-unused-but-set-variable")
+ENDIF()
+
 SET(PHYSX_COMMON_FLAGS_DEBUG "/Od ${WINCRT_DEBUG} /RTCu /Zi")
 SET(PHYSX_COMMON_FLAGS_CHECKED "/O2 ${WINCRT_NDEBUG} /Zi")
 SET(PHYSX_COMMON_FLAGS_PROFILE "/O2 ${WINCRT_NDEBUG} /Zi")
@@ -145,17 +151,21 @@ IF(PX_COPY_EXTERNAL_DLL OR PUBLIC_RELEASE)
 	ENDIF()
 
 	IF(CMAKE_CL_64)
-		IF(NOT PUBLIC_RELEASE)	
+		IF(NOT PUBLIC_RELEASE AND EXISTS "${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice64.dll")
 			FILE(COPY ${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice64.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_DEBUG})
 			FILE(COPY ${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice64.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_PROFILE})
 			FILE(COPY ${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice64.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_RELEASE})
 			FILE(COPY ${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice64.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_CHECKED})
 		ENDIF()
 
-		FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglutd.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_DEBUG})
-		FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_PROFILE})
-		FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_RELEASE})
-		FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_CHECKED})
+		IF(EXISTS "${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglutd.dll")
+			FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglutd.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_DEBUG})
+		ENDIF()
+		IF(EXISTS "${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll")
+			FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_PROFILE})
+			FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_RELEASE})
+			FILE(COPY ${PHYSX_SLN_FREEGLUT_PATH}/win64/freeglut.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_CHECKED})
+		ENDIF()
 	# ELSE()
 	# 	FILE(COPY ${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_DEBUG})
 	# 	FILE(COPY ${PHYSX_SLN_PHYSXDEVICE_PATH}/PhysXDevice.dll DESTINATION ${PX_EXE_OUTPUT_DIRECTORY_PROFILE})

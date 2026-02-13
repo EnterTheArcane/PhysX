@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build:
+    name: ${{ matrix.platform }}-${{ matrix.architecture }}
+    runs-on: ${{ matrix.image }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux
+            architecture: ARM
+            image: ubuntu-24.04-arm
+            preset: linux-arm
+          - platform: Linux
+            architecture: X64
+            image: ubuntu-24.04
+            preset: linux-x64
+          - platform: Mac
+            architecture: ARM
+            image: macos-15
+            preset: mac-arm
+          - platform: Mac
+            architecture: X64
+            image: macos-15
+            preset: mac-x64
+          - platform: Windows
+            architecture: X64
+            image: windows-2025
+            preset: windows-x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@f176ccd3f28bda569c43aae4894f06b2435a3375 # v4.2.3
+        with:
+          useCloudCache: true
+          useLocalCache: true
+          cmakeVersion: "4.2.3"
+          ninjaVersion: "1.13.2"
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+        working-directory: physx/compiler/public
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+        working-directory: physx/compiler/public
