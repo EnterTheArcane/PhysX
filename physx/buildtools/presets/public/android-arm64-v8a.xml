@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preset name="android-arm64-v8a" comment="Android arm64-v8a PhysX SDK settings">
+  <platform targetPlatform="android" compiler="clang" />
+  <CMakeSwitches>
+    <cmakeSwitch name="PX_BUILDSNIPPETS" value="False" comment="Do not generate snippets for Android" />
+    <cmakeSwitch name="PX_BUILDPVDRUNTIME" value="False" comment="Do not generate PVD runtime for Android" />
+    <cmakeSwitch name="PX_GENERATE_STATIC_LIBRARIES" value="True" comment="Generate static libs" />
+    <cmakeSwitch name="PX_GENERATE_GPU_PROJECTS" value="False" comment="No GPU on Android" />
+  </CMakeSwitches>
+  <CMakeParams>
+    <cmakeParam name="CMAKE_INSTALL_PREFIX" value="install/android-arm64-v8a/PhysX" comment="Install path relative to PhysX SDK root" />
+  </CMakeParams>
+</preset>

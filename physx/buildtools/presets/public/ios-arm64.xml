@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preset name="ios-arm64" comment="iOS arm64 PhysX SDK settings">
+  <platform targetPlatform="ios" compiler="clang" />
+  <CMakeSwitches>
+    <cmakeSwitch name="PX_BUILDSNIPPETS" value="False" comment="Do not generate snippets for iOS" />
+    <cmakeSwitch name="PX_BUILDPVDRUNTIME" value="False" comment="Do not generate PVD runtime for iOS" />
+    <cmakeSwitch name="PX_GENERATE_STATIC_LIBRARIES" value="True" comment="Generate static libs" />
+    <cmakeSwitch name="PX_GENERATE_GPU_PROJECTS" value="False" comment="No GPU on iOS" />
+  </CMakeSwitches>
+  <CMakeParams>
+    <cmakeParam name="CMAKE_INSTALL_PREFIX" value="install/ios-arm64/PhysX" comment="Install path relative to PhysX SDK root" />
+  </CMakeParams>
+</preset>

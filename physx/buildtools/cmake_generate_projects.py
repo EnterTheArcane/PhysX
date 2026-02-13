@@ -35,10 +35,8 @@ def filterPreset(presetPath):
         if any((presetName.find(elem) != -1 and 'windows-crosscompile' not in presetName) for elem in winPresetFilter):
             return True
     else:
-        # On non-Windows, include Linux presets and windows-crosscompile
-        # Check for Linux or other Unix/macOS presets (those not containing Windows-specific terms)
-        # Special case: include windows-crosscompile, which is for cross-compiling Windows targets
-        if 'linux' in presetName.lower() or 'mac' in presetName.lower() or 'windows-crosscompile' in presetName:
+        # On non-Windows, include Linux, Mac, iOS, Android presets and windows-crosscompile
+        if 'linux' in presetName.lower() or 'mac' in presetName.lower() or 'android' in presetName.lower() or 'ios' in presetName.lower() or 'windows-crosscompile' in presetName:
             return True
         if all(presetName.find(elem) == -1 for elem in ['win', 'switch']):
             return True
@@ -159,6 +157,12 @@ class CMakePreset:
             return False
         elif self.targetPlatform == 'linuxAarch64':
             return False
+        elif self.targetPlatform == 'android':
+            return False
+        elif self.targetPlatform == 'ios':
+            return False
+        elif self.targetPlatform == 'macArm64':
+            return False
         elif self.compiler == 'x86_64-w64-mingw32-g++':
             return False
         return True
@@ -253,6 +257,12 @@ class CMakePreset:
                 outString = outString + ' -DCMAKE_MAKE_PROGRAM=' + os.environ['PM_ninja_PATH'] + '/ninja'
             else:
                 outString = outString + '-G \"Unix Makefiles\"'
+        # Android / iOS (single-config, use Makefiles or Ninja)
+        elif self.targetPlatform in ['android', 'ios', 'macArm64']:
+            if self.generator is not None and self.generator == 'ninja':
+                outString = outString + '-G \"Ninja\"'
+            else:
+                outString = outString + '-G \"Unix Makefiles\"'
 
         if self.targetPlatform == 'win64':
             if self.generator != 'ninja':
@@ -312,6 +322,30 @@ class CMakePreset:
         elif self.targetPlatform == 'mac64':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=mac'
             outString = outString + ' -DPX_OUTPUT_ARCH=x86'
+            return outString
+        elif self.targetPlatform == 'macArm64':
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=mac'
+            outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            outString = outString + ' -DCMAKE_OSX_ARCHITECTURES=arm64'
+            return outString
+        elif self.targetPlatform == 'android':
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=android'
+            outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            if os.environ.get('ANDROID_NDK_HOME') is not None:
+                outString = outString + ' -DCMAKE_TOOLCHAIN_FILE=' + \
+                    os.environ['ANDROID_NDK_HOME'] + '/build/cmake/android.toolchain.cmake'
+            elif os.environ.get('ANDROID_NDK') is not None:
+                outString = outString + ' -DCMAKE_TOOLCHAIN_FILE=' + \
+                    os.environ['ANDROID_NDK'] + '/build/cmake/android.toolchain.cmake'
+            outString = outString + ' -DANDROID_ABI=arm64-v8a'
+            outString = outString + ' -DANDROID_NATIVE_API_LEVEL=24'
+            return outString
+        elif self.targetPlatform == 'ios':
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=ios'
+            outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            outString = outString + ' -DCMAKE_SYSTEM_NAME=iOS'
+            outString = outString + ' -DCMAKE_OSX_ARCHITECTURES=arm64'
+            outString = outString + ' -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0'
             return outString
         return ''
 

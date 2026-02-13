@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preset name="mac-arm64" comment="macOS arm64 (Apple Silicon) PhysX SDK settings">
+  <platform targetPlatform="macArm64" compiler="clang" />
+  <CMakeSwitches>
+    <cmakeSwitch name="PX_BUILDSNIPPETS" value="False" comment="Do not generate snippets" />
+    <cmakeSwitch name="PX_BUILDPVDRUNTIME" value="False" comment="Do not generate PVD runtime" />
+    <cmakeSwitch name="PX_GENERATE_STATIC_LIBRARIES" value="True" comment="Generate static libs" />
+    <cmakeSwitch name="PX_GENERATE_GPU_PROJECTS" value="False" comment="No GPU on macOS arm64" />
+  </CMakeSwitches>
+  <CMakeParams>
+    <cmakeParam name="CMAKE_INSTALL_PREFIX" value="install/mac-arm64/PhysX" comment="Install path relative to PhysX SDK root" />
+  </CMakeParams>
+</preset>

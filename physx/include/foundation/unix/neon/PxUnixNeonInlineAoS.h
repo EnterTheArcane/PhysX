@@ -3474,83 +3474,31 @@ PX_FORCE_INLINE VecI32V VecI32V_ReinterpretFrom_Vec4V(Vec4V a)
 	return vreinterpretq_s32_f32(a);
 }
 
-#if !PX_SWITCH
-template <int index>
-PX_FORCE_INLINE BoolV BSplatElement(BoolV a)
-{
-	if(index < 2)
-	{
-		return vdupq_lane_u32(vget_low_u32(a), index);
-	}
-	else if(index == 2)
-	{
-		return vdupq_lane_u32(vget_high_u32(a), 0);
-	}
-	else if(index == 3)
-	{
-		return vdupq_lane_u32(vget_high_u32(a), 1);
-	}
-}
-#else
-//workaround for template compile issue
+// Use explicit template specializations for all platforms to avoid
+// non-constant lane index issues with vdupq_lane_u32 on some compilers
 template <int index> PX_FORCE_INLINE BoolV BSplatElement(BoolV a);
 template<> PX_FORCE_INLINE BoolV BSplatElement<0>(BoolV a) { return vdupq_lane_u32(vget_low_u32(a), 0); }
 template<> PX_FORCE_INLINE BoolV BSplatElement<1>(BoolV a) { return vdupq_lane_u32(vget_low_u32(a), 1); }
 template<> PX_FORCE_INLINE BoolV BSplatElement<2>(BoolV a) { return vdupq_lane_u32(vget_high_u32(a), 0); }
 template<> PX_FORCE_INLINE BoolV BSplatElement<3>(BoolV a) { return vdupq_lane_u32(vget_high_u32(a), 1); }
-#endif
 
-#if !PX_SWITCH
-template <int index>
-PX_FORCE_INLINE VecU32V V4U32SplatElement(VecU32V a)
-{
-	if(index < 2)
-	{
-		return vdupq_lane_u32(vget_low_u32(a), index);
-	}
-	else if(index == 2)
-	{
-		return vdupq_lane_u32(vget_high_u32(a), 0);
-	}
-	else if(index == 3)
-	{
-		return vdupq_lane_u32(vget_high_u32(a), 1);
-	}
-}
-#else
+// Use explicit template specializations for all platforms to avoid
+// non-constant lane index issues with vdupq_lane_u32 on some compilers
 //workaround for template compile issue
 template <int index> PX_FORCE_INLINE VecU32V V4U32SplatElement(VecU32V a);
 template <> PX_FORCE_INLINE VecU32V V4U32SplatElement<0>(VecU32V a) { return vdupq_lane_u32(vget_low_u32(a), 0); }
 template <> PX_FORCE_INLINE VecU32V V4U32SplatElement<1>(VecU32V a) { return vdupq_lane_u32(vget_low_u32(a), 1); }
 template <> PX_FORCE_INLINE VecU32V V4U32SplatElement<2>(VecU32V a) { return vdupq_lane_u32(vget_high_u32(a), 0); }
 template <> PX_FORCE_INLINE VecU32V V4U32SplatElement<3>(VecU32V a) { return vdupq_lane_u32(vget_high_u32(a), 1); }
-#endif
 
-#if !PX_SWITCH
-template <int index>
-PX_FORCE_INLINE Vec4V V4SplatElement(Vec4V a)
-{
-	if(index < 2)
-	{
-		return vdupq_lane_f32(vget_low_f32(a), index);
-	}
-	else if(index == 2)
-	{
-		return vdupq_lane_f32(vget_high_f32(a), 0);
-	}
-	else if(index == 3)
-	{
-		return vdupq_lane_f32(vget_high_f32(a), 1);
-	}
-}
-#else
+// Use explicit template specializations for all platforms to avoid
+// non-constant lane index issues with vdupq_lane_f32 on some compilers
 //workaround for template compile issue
 template <int index> PX_FORCE_INLINE Vec4V V4SplatElement(Vec4V a);
 template <> PX_FORCE_INLINE Vec4V V4SplatElement<0>(Vec4V a) { return vdupq_lane_f32(vget_low_f32(a), 0); }
 template <> PX_FORCE_INLINE Vec4V V4SplatElement<1>(Vec4V a) { return vdupq_lane_f32(vget_low_f32(a), 1); }
 template <> PX_FORCE_INLINE Vec4V V4SplatElement<2>(Vec4V a) { return vdupq_lane_f32(vget_high_f32(a), 0); }
 template <> PX_FORCE_INLINE Vec4V V4SplatElement<3>(Vec4V a) { return vdupq_lane_f32(vget_high_f32(a), 1); }
-#endif
 
 PX_FORCE_INLINE VecU32V U4LoadXYZW(PxU32 x, PxU32 y, PxU32 z, PxU32 w)
 {
