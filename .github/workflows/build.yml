@@ -1,0 +1,132 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      android-arm:
+        description: Android ARM
+        type: boolean
+        default: true
+      android-x64:
+        description: Android X64
+        type: boolean
+        default: true
+      ios-arm:
+        description: iOS
+        type: boolean
+        default: true
+      ios-simulator-arm:
+        description: iOS Simulator ARM
+        type: boolean
+        default: true
+      ios-simulator-x64:
+        description: iOS Simulator X64
+        type: boolean
+        default: true
+      linux-arm:
+        description: Linux ARM
+        type: boolean
+        default: true
+      linux-x64:
+        description: Linux X64
+        type: boolean
+        default: true
+      mac-arm:
+        description: Mac ARM
+        type: boolean
+        default: true
+      mac-x64:
+        description: Mac X64
+        type: boolean
+        default: true
+      windows-arm:
+        description: Windows ARM
+        type: boolean
+        default: true
+      windows-x64:
+        description: Windows X64
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  CUDA_VERSION: '12.8.1'
+
+jobs:
+  matrix:
+    name: Matrix
+    runs-on: ubuntu-slim
+    outputs:
+      targets: ${{ steps.targets.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      - name: Select build targets
+        id: targets
+        env:
+          INPUTS: ${{ toJSON(inputs) }}
+        run: python3 .github/scripts/build_matrix.py
+
+  build:
+    name: Build ${{ matrix.target }} (${{ matrix.linkage }})
+    needs: matrix
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJSON(needs.matrix.outputs.targets) }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ matrix.gpu && 240 || 120 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14'
+
+      - name: Install build tools
+        run: python -m pip install cmake==4.4.4 ninja==1.13.2
+
+      - name: Configure installed MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.target == 'windows-arm' && 'amd64_arm64' || 'x64' }}
+          vsversion: 2022
+
+      - name: Install Linux compilers and ARM target libraries
+        if: startsWith(matrix.target, 'linux-')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang g++-aarch64-linux-gnu
+
+      - name: Install CUDA compiler and target libraries
+        if: matrix.gpu
+        env:
+          TARGET: ${{ matrix.target }}
+        run: python .github/scripts/install_cuda.py
+
+      - name: Build, install, and verify SDK
+        env:
+          TARGET: ${{ matrix.target }}
+          PRESET: ${{ matrix.preset }}
+          LINKAGE: ${{ matrix.linkage }}
+          GPU: ${{ matrix.gpu }}
+        run: python .github/scripts/build_sdk.py
+
+      - name: Upload SDK and build logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: physx-${{ github.sha }}-${{ matrix.target }}-${{ matrix.linkage }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            out/${{ matrix.target }}/${{ matrix.linkage }}/*/install/
+            out/${{ matrix.target }}/${{ matrix.linkage }}/*/logs/
