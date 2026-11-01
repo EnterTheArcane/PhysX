@@ -32,16 +32,7 @@
 #include "NsBasicTemplates.h"
 #include "NvIntrinsics.h"
 
-#if NV_LINUX || NV_ANDROID || (NV_IOS && !NV_A64) || NV_OSX || NV_PS3 || NV_PSP2 || NV_WIIU
-#include <tr1/type_traits>
-#elif NV_WINRT || NV_XBOXONE || (NV_IOS && NV_A64) || NV_WIN64 || NV_X360 || NV_WIN32 || NV_PS4
 #include <type_traits>
-#if NV_IOS && NV_A64
-namespace std { namespace tr1 { using std::is_pod; } }
-#endif
-#else
-#error "OS with no defined path to type_traits.h"
-#endif
 
 #if NV_VC == 9 || NV_VC == 10
 #pragma warning(push)
@@ -165,7 +156,7 @@ class Array : protected Alloc
 #if NV_VC>=14
         return std::is_trivially_copyable<T>::value;
 #else
-        return std::tr1::is_pod<T>::value;
+        return std::is_pod<T>::value;
 #endif
     }
 

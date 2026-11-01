@@ -25,8 +25,12 @@
 // Copyright (c) 2016-2024 NVIDIA Corporation. All rights reserved.
 
 
+#ifndef NV_FOUNDATION_DLL
+#define NV_FOUNDATION_DLL 1
+#endif
 #include "NvBlastGlobals.h"
 #include "NvBlastAssert.h"
+#include "NvAssert.h"
 #include "NvAllocatorCallback.h"
 #include "NvErrorCallback.h"
 #include "NsGlobals.h"
@@ -41,6 +45,32 @@
 #if NV_WINDOWS_FAMILY || NV_LINUX_FAMILY
 #include <malloc.h>
 #endif
+
+namespace nvidia
+{
+namespace
+{
+class BlastAssertHandler final : public NvAssertHandler
+{
+    void operator()(const char* expression, const char* file, int line, bool& ignore) override
+    {
+        NvBlastAssertHandler(expression, file, line, ignore);
+    }
+};
+BlastAssertHandler defaultAssertHandler;
+NvAssertHandler* assertHandler = &defaultAssertHandler;
+}
+
+NV_FOUNDATION_API NvAssertHandler& NvGetAssertHandler()
+{
+    return *assertHandler;
+}
+
+NV_FOUNDATION_API void NvSetAssertHandler(NvAssertHandler& handler)
+{
+    assertHandler = &handler;
+}
+}
 
 
 namespace Nv

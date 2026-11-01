@@ -52,7 +52,9 @@
 #pragma warning(pop)
 
 #include <float.h>
+#if NV_X86 || NV_X64
 #include <mmintrin.h>
+#endif
 
 #pragma intrinsic(_BitScanForward)
 #pragma intrinsic(_BitScanReverse)
@@ -112,7 +114,7 @@ NV_FORCE_INLINE uint32_t countLeadingZeros(uint32_t v)
 /*!
 Prefetch aligned cache size around \c ptr+offset.
 */
-#if !NV_ARM
+#if !NV_ARM_FAMILY
 NV_FORCE_INLINE void prefetchLine(const void* ptr, uint32_t offset = 0)
 {
     // cache line on X86/X64 is 64-bytes so a 128-byte prefetch would require 2 prefetches.
@@ -132,7 +134,7 @@ NV_FORCE_INLINE void prefetchLine(const void* ptr, uint32_t offset = 0)
 /*!
 Prefetch \c count bytes starting at \c ptr.
 */
-#if !NV_ARM
+#if !NV_ARM_FAMILY
 NV_FORCE_INLINE void prefetch(const void* ptr, uint32_t count = 1)
 {
     const char* cp = (char*)ptr;
@@ -149,9 +151,9 @@ NV_FORCE_INLINE void prefetch(const void* ptr, uint32_t count = 1)
 NV_FORCE_INLINE void prefetch(const void* ptr, uint32_t count = 1)
 {
     const char* cp = (char*)ptr;
-    uint32_t p = size_t(ptr);
-    uint32_t startLine = p >> 5, endLine = (p + count - 1) >> 5;
-    uint32_t lines = endLine - startLine + 1;
+    uintptr_t p = size_t(ptr);
+    uintptr_t startLine = p >> 5, endLine = (p + count - 1) >> 5;
+    uintptr_t lines = endLine - startLine + 1;
     do
     {
         prefetchLine(cp);

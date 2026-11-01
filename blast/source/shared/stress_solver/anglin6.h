@@ -152,6 +152,7 @@ struct AngLin6Ops
 /**
  * SIMD AngLin6 operations.
  */
+#if NV_X86 || NV_X64
 template<>
 struct AngLin6Ops<__m128>
 {
@@ -280,3 +281,5 @@ struct AngLin6Ops<__m128>
         return _mm_add_ps(_ang_sq, _lin_sq);
     }
 };
+
+#endif

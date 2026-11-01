@@ -84,10 +84,13 @@ Operating system defines, see http://sourceforge.net/p/predef/wiki/OperatingSyst
 #define NV_ANDROID 1
 #elif defined(__linux__) // note: __ANDROID__ implies __linux__
 #define NV_LINUX 1
-#elif defined(__APPLE__) && (defined(__arm__) || defined(__arm64__))
-#define NV_IOS 1
 #elif defined(__APPLE__)
+#include <TargetConditionals.h>
+#if TARGET_OS_IPHONE
+#define NV_IOS 1
+#else
 #define NV_OSX 1
+#endif
 #elif defined(__CELLOS_LV2__)
 #define NV_PS3 1
 #elif defined(__ORBIS__)
@@ -107,7 +110,7 @@ Architecture defines, see http://sourceforge.net/p/predef/wiki/Architectures/
 #define NV_X64 1
 #elif defined(__i386__) || defined(_M_IX86)
 #define NV_X86 1
-#elif defined(__arm64__) || defined(__aarch64__)
+#elif defined(__arm64__) || defined(__aarch64__) || defined(_M_ARM64)
 #define NV_A64 1
 #elif defined(__arm__) || defined(_M_ARM)
 #define NV_ARM 1
@@ -270,11 +273,7 @@ Assert macro
 DLL export macros
 */
 #ifndef NV_C_EXPORT
-#if NV_WINDOWS_FAMILY || NV_LINUX
 #define NV_C_EXPORT extern "C"
-#else
-#define NV_C_EXPORT
-#endif
 #endif
 
 #if NV_UNIX_FAMILY&& __GNUC__ >= 4
@@ -300,7 +299,7 @@ no definition       - this will allow DLLs and libraries to use the exported API
 
 */
 
-#if NV_WINDOWS_FAMILY && !NV_ARM_FAMILY || NV_WINRT
+#if NV_WINDOWS_FAMILY
 #ifndef NV_FOUNDATION_DLL
 #define NV_FOUNDATION_API NV_DLL_IMPORT
 #elif NV_FOUNDATION_DLL

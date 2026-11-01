@@ -26,7 +26,9 @@
 
 #include "stress.h"
 #include "math/cgnr.h"
+#if NV_X86 || NV_X64
 #include "simd/simd_device_query.h"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -35,7 +37,11 @@
 
 
 typedef CGNR<AngLin6, AngLin6Ops<Float_Scalar>, BondMatrixS, BondMatrixOpsS<Float_Scalar>, Float_Scalar, AngLin6ErrorSq>    CGNR_SISD;
+#if NV_X86 || NV_X64
 typedef CGNR<AngLin6, AngLin6Ops<SIMD_Scalar>, BondMatrixS, BondMatrixOpsS<SIMD_Scalar>, SIMD_Scalar, AngLin6ErrorSq>       CGNR_SIMD;
+#else
+typedef CGNR_SISD CGNR_SIMD;
+#endif
 
 
 /**
@@ -45,11 +51,15 @@ typedef CGNR<AngLin6, AngLin6Ops<SIMD_Scalar>, BondMatrixS, BondMatrixOpsS<SIMD_
 // Check for SSE, FMA3, and AVX support
 const bool
 StressProcessor::s_use_simd =
+#if NV_X86 || NV_X64
     device_supports_instruction_set(InstructionSet::SSE) &&     // Basic SSE
     device_supports_instruction_set(InstructionSet::FMA3) &&    // Fused Multiply-Add instructions
     device_supports_instruction_set(InstructionSet::OSXSAVE) && // OS uses XSAVE and XRSTORE instructions allowing saving YMM registers on context switch
     device_supports_instruction_set(InstructionSet::AVX) &&     // Advanced Vector Extensions (256 bit operations)
     os_supports_avx_restore();                                  // OS has enabled the required extended state for AVX
+#else
+    false;
+#endif
 
 
 /**

@@ -81,6 +81,7 @@ struct InertiaMatrixOps
     }
 };
 
+#if NV_X86 || NV_X64
 template<>
 struct InertiaMatrixOps<SIMD_Scalar>
 {
@@ -114,3 +115,5 @@ struct InertiaMatrixOps<SIMD_Scalar>
         }
     }
 };
+
+#endif

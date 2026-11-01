@@ -116,6 +116,7 @@ struct CouplingMatrixOps
     }
 };
 
+#if NV_X86 || NV_X64
 template <typename Elem>
 struct CouplingMatrixOps<Elem, SIMD_Scalar>
 {
@@ -202,3 +203,5 @@ private:
         return _mm256_shuffle_ps(res_shuffled, res_shuffled, 0xc9);
     }
 };
+
+#endif

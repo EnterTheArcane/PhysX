@@ -841,7 +841,7 @@ const float* NvBlastActorGetCachedBondHeaths(const NvBlastActor* actor, NvBlastL
 
 bool NvBlastActorCacheBondHeath(const NvBlastActor* actor, uint32_t bondIndex, NvBlastLog logFn)
 {
-    NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorCacheBondHeath: NULL actor pointer input.", return nullptr);
+    NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorCacheBondHeath: NULL actor pointer input.", return false);
 
     const Nv::Blast::Actor& a = *static_cast<const Nv::Blast::Actor*>(actor);
 

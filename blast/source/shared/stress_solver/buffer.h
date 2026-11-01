@@ -30,6 +30,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <vector>
+#include <cstdlib>
+#include <cstring>
 
 
 #if NV_WINDOWS_FAMILY

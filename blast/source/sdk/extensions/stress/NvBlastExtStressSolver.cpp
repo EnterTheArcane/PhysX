@@ -40,9 +40,9 @@
 
 #include "stress.h"
 #include "buffer.h"
-#include "simd/simd_device_query.h"
 
 #include <algorithm>
+#include <cmath>
 
 #define USE_SCALAR_IMPL 0
 #define WARM_START 1
@@ -1351,7 +1351,7 @@ bool ExtStressSolverImpl::getExcessForces(uint32_t actorIndex, const NvcVec3& co
             NVBLAST_ASSERT(blastBondIndex == bondData.blastBondIndex);
             uint32_t node0, node1;
             m_graphProcessor->getSolverInternalBondNodes(internalBondIndex, node0, node1);
-            NVBLAST_ASSERT(bondData.node0 == internalBondData.node0 && bondData.node1 == internalBondData.node1);
+            NVBLAST_ASSERT(bondData.node0 == node0 && bondData.node1 == node1);
 
             // accumulators for forces just from this bond
             nvidia::NvVec3 nvLinearPressure(0.0f);
