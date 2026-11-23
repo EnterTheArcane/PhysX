@@ -24,7 +24,10 @@ ENDIF()
 # Common Flags
 # PT: changed /Ox to /O2 because "the /Ox compiler option enables only a subset of the speed optimization options enabled by /O2."
 # See https://docs.microsoft.com/en-us/cpp/build/reference/ox-full-optimization?view=vs-2019
-SET(PHYSX_COMMON_FLAGS "/std:c++14 /d2Zi+ /MP /WX /W4 /GF /GS- /Gd ${PHYSX_FP_MODE} /Oy ${PHYSX_WARNING_DISABLES}")
+SET(PHYSX_COMMON_FLAGS "/std:c++14 /W4 /GF /GS- /Gd ${PHYSX_FP_MODE} /Oy ${PHYSX_WARNING_DISABLES}")
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	STRING(APPEND PHYSX_COMMON_FLAGS " /d2Zi+ /MP /WX")
+ENDIF()
 IF(PHYSX_TARGET_ARCH STREQUAL "a64")
 	# Preserve the acquire/release volatile semantics used by the Windows solvers.
 	STRING(APPEND PHYSX_COMMON_FLAGS " /volatile:ms")
