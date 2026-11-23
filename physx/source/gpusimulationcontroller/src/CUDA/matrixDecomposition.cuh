@@ -27,7 +27,7 @@ inline void jacobiRotateT(float* A, float* R)
 	float d = __fdividef(A[pp_index] - A[qq_index], 2.0f*A[pq_index]);
 	float dSqPlus1 = d * d + 1.0f;
 	float t = __fdividef(1.0f, fabs(d) + sqrtf(dSqPlus1));
-	t = copysign(t, d);
+	t = copysignf(t, d);
 	float c = 1.0f * rsqrtf(t*t + 1.0f);
 	float s = t * c;
 

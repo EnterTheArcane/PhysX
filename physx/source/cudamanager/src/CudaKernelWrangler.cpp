@@ -179,6 +179,21 @@ cudaError_t CUDARTAPI cudaLaunchKernel( const void* , dim3 , dim3 , void** , siz
 	return cudaSuccess;
 }
 
+#if CUDA_VERSION >= 13000
+// NVCC generates host launch stubs even for kernels launched only via the driver API.
+extern "C"
+cudaError_t CUDARTAPI __cudaGetKernel(cudaKernel_t*, const void*)
+{
+	return cudaErrorNotSupported;
+}
+
+extern "C"
+cudaError_t CUDARTAPI __cudaLaunchKernel(cudaKernel_t, dim3, dim3, void**, size_t, cudaStream_t)
+{
+	return cudaErrorNotSupported;
+}
+#endif
+
 extern "C"
 cudaError_t CUDARTAPI cudaSetupArgument(const void*, size_t, size_t)
 {

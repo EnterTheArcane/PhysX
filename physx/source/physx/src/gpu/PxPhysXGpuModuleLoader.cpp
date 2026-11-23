@@ -9,7 +9,7 @@
 #include "cudamanager/PxCudaContextManager.h"
 #include "PxPhysics.h"
 
-#if PX_WINDOWS
+#if PX_WINDOWS_FAMILY
 #include "common/windows/PxWindowsDelayLoadHook.h"
 #include "foundation/windows/PxWindowsInclude.h"
 #include "windows/CmWindowsModuleUpdateLoader.h"
@@ -111,7 +111,7 @@ namespace physx
 		g_PxCreatePhysicsGpu_Func = NULL;
 	}
 
-#if PX_WINDOWS
+#if PX_WINDOWS_FAMILY
 
 	typedef void (PxSetPhysXGpuDelayLoadHook_FUNC)(const PxDelayLoadHook* delayLoadHook);	
 
