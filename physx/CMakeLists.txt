@@ -178,6 +178,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 if(_PHYSX_IS_TOP_LEVEL_FOR_PROJECT)
   set(PX_IS_TOP_LEVEL_PROJECT TRUE)
   set(PX_ENABLE_INSTALL TRUE)
+  get_property(_physx_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+  set(_physx_install_config_suffix "")
+  if(_physx_multi_config)
+    set(_physx_install_config_suffix "/$<LOWER_CASE:$<CONFIG>>")
+  endif()
+  set(PX_INSTALL_LIB_DIR "${CMAKE_INSTALL_LIBDIR}${_physx_install_config_suffix}")
+  set(PX_INSTALL_BIN_DIR "${CMAKE_INSTALL_BINDIR}${_physx_install_config_suffix}")
 else()
   set(PX_IS_TOP_LEVEL_PROJECT FALSE)
   set(PX_ENABLE_INSTALL FALSE)
@@ -478,10 +485,10 @@ if(PX_ENABLE_INSTALL)
   # Install PhysX library targets and the physx_lib INTERFACE aggregator
   install(TARGETS ${PHYSX_INSTALL_LIBS} physx_lib
       EXPORT PhysXTargets
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${PX_INSTALL_LIB_DIR}
+      LIBRARY DESTINATION ${PX_INSTALL_LIB_DIR}
+      RUNTIME DESTINATION ${PX_INSTALL_BIN_DIR}
+      FRAMEWORK DESTINATION ${PX_INSTALL_LIB_DIR}
       INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
   # Export the targets for find_package

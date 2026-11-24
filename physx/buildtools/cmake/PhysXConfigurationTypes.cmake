@@ -12,9 +12,14 @@
 #
 # It must be called AFTER project() so that MSVC is set, and BEFORE any target is created.
 
-if(CMAKE_CONFIGURATION_TYPES)
+get_property(_physx_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(_physx_multi_config)
   set(CMAKE_CONFIGURATION_TYPES debug checked profile release CACHE STRING
       "Reset config to what we need" FORCE)
+endif()
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" _physx_build_type)
+if(_physx_multi_config OR _physx_build_type MATCHES "^(checked|profile)$")
 
   # CMake doesn't automatically create linker-flag variables for non-standard
   # configurations, which causes "Missing variable" errors during generation.
