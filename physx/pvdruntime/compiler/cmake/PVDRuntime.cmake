@@ -32,7 +32,7 @@ SET(PVDRUNTIME_HEADERS
 SOURCE_GROUP(include FILES ${PVDRUNTIME_HEADERS})
 
 if(NOT DEFINED PX_ENABLE_INSTALL OR PX_ENABLE_INSTALL)
-  install(FILES ${PVDRUNTIME_HEADERS} DESTINATION pvdruntime/include)
+  install(FILES ${PVDRUNTIME_HEADERS} DESTINATION include/pvdruntime)
 endif()
 
 SET(PVDRUNTIME_SOURCES
@@ -74,7 +74,7 @@ add_library(PVDRuntime STATIC
 target_include_directories(PVDRuntime
   PUBLIC
     $<BUILD_INTERFACE:${_PVDRUNTIME_ROOT}/include>
-    $<INSTALL_INTERFACE:pvdruntime/include>
+    $<INSTALL_INTERFACE:include/pvdruntime>
   PRIVATE
     ${_PVDRUNTIME_ROOT}/src
 )

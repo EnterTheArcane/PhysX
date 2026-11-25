@@ -189,7 +189,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
             include/PvdDomInspection.h
             DESTINATION include/pvddom)
     endif()
-    install(DIRECTORY "${PVDRUNTIME_ROOT}/include/" DESTINATION pvdruntime/include FILES_MATCHING PATTERN "*.h")
+    install(DIRECTORY "${PVDRUNTIME_ROOT}/include/" DESTINATION include/pvdruntime FILES_MATCHING PATTERN "*.h")
     install(EXPORT PvdDomTargets NAMESPACE PhysX:: DESTINATION lib/cmake/PvdDom)
     install(EXPORT PvdDomRuntimeTargets NAMESPACE PvdDom:: DESTINATION lib/cmake/PvdDom)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PvdDomConfig.cmake"

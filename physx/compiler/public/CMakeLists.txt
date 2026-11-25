@@ -83,7 +83,7 @@ IF(PX_BUILDPVDRUNTIME)
 			INSTALL(TARGETS PVDRuntime
 				EXPORT PhysXSDK
 				ARCHIVE DESTINATION "$<$<CONFIG:debug>:${PX_ROOT_LIB_DIR}/debug>$<$<CONFIG:release>:${PX_ROOT_LIB_DIR}/release>$<$<CONFIG:checked>:${PX_ROOT_LIB_DIR}/checked>$<$<CONFIG:profile>:${PX_ROOT_LIB_DIR}/profile>"
-				INCLUDES DESTINATION pvdruntime/include
+				INCLUDES DESTINATION include/pvdruntime
 			)
 		ENDIF()
 	ENDIF()

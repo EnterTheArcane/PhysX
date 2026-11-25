@@ -30,7 +30,7 @@ checked("${CMAKE_COMMAND}" -S "${SOURCE}" -B "${standalone}" -G "${GENERATOR}"
     "-DCMAKE_CXX_FLAGS=${CXX_FLAGS}" "-DCMAKE_EXE_LINKER_FLAGS=${LINKER_FLAGS}")
 checked("${CMAKE_COMMAND}" --build "${standalone}" --config "${CONFIG}" --parallel 4)
 checked("${CMAKE_COMMAND}" --install "${standalone}" --config "${CONFIG}" --prefix "${standalone}/installed")
-foreach(installedFile pvdruntime/include/OmniPvdLibraryFunctions.h lib/cmake/PvdDom/PvdDomConfig.cmake lib/cmake/PvdDom/PvdDomConfigVersion.cmake share/physx/skills)
+foreach(installedFile include/pvdruntime/OmniPvdLibraryFunctions.h lib/cmake/PvdDom/PvdDomConfig.cmake lib/cmake/PvdDom/PvdDomConfigVersion.cmake share/physx/skills)
     if(NOT EXISTS "${standalone}/installed/${installedFile}")
         message(FATAL_ERROR "Standalone package missing ${installedFile}")
     endif()
