@@ -16,6 +16,17 @@ endif()
 # Include the targets file
 include("${CMAKE_CURRENT_LIST_DIR}/PhysXTargets.cmake")
 
+if(EMSCRIPTEN)
+    get_target_property(_physx_foundation_type PhysX::PhysXFoundation TYPE)
+    if(_physx_foundation_type STREQUAL "SHARED_LIBRARY")
+        # emcc searches library directories for dependencies of side modules.
+        target_link_directories(PhysX::PhysXFoundation INTERFACE
+            "$<TARGET_FILE_DIR:PhysX::PhysXFoundation>"
+        )
+    endif()
+    unset(_physx_foundation_type)
+endif()
+
 # Set convenience variables for legacy code
 # Note: After installation, all headers are in the include/ directory.
 # The source/*/include paths only exist in the source tree, not after install.
